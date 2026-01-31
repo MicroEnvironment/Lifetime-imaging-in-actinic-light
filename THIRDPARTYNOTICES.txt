@@ -1,0 +1,123 @@
+﻿THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+
+This project incorporates components from the open-source projects listed below. 
+The original copyright notices and the licenses under which these components 
+were received are set forth below.
+
+--------------------------------------------------------------------------------
+
+Name: matplotlib
+Version: 3.10.0
+Summary: Python plotting package
+License: License agreement for matplotlib versions 1.3.0 and later
+
+
+
+--------------------
+
+
+Name: numpy
+Version: 2.2.5
+Summary: Fundamental package for array computing in Python
+License: Copyright (c) 2005-2024, NumPy Developers.
+
+
+
+--------------------
+
+
+Name: opencv-python
+Version: 4.10.0.84
+Summary: Wrapper package for OpenCV python bindings.
+License: Apache 2.0
+
+
+
+--------------------
+
+
+Name: pyserial
+Version: 3.5
+Summary: Python Serial Port Extension
+License: BSD
+
+
+
+--------------------
+
+
+Name: PySide6
+Version: 6.9.1
+Summary: Python bindings for the Qt cross-platform application and UI framework
+License: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+
+
+
+--------------------
+
+
+Name: PySide6_Addons
+Version: 6.9.1
+Summary: Python bindings for the Qt cross-platform application and UI framework (Addons)
+License: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+
+
+
+--------------------
+
+
+Name: PySide6_Essentials
+Version: 6.9.1
+Summary: Python bindings for the Qt cross-platform application and UI framework (Essentials)
+License: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+
+
+
+--------------------
+
+
+Name: usb-monitor
+Version: 1.23
+Summary: USBMonitor is an easy-to-use cross-platform library for USB device monitoring that simplifies tracking of connections, disconnections, and examination of connected 
+device attributes on Windows, Linux and MacOs, freeing the user from platform-specific details or incompatibilities.
+License: MIT
+
+
+
+--------------------
+
+Name: ximea-py (xiAPI Python)
+License: MIT
+Copyright 2022 Ximea GmbH
+
+Permission is hereby granted, free of charge, to any person obtaining a copy 
+of this software and associated documentation files (the "Software"), to deal 
+in the Software without restriction, including without limitation the rights 
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in 
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+THE SOFTWARE.
+
+--------------------------------------------------------------------------------
+
+NOTICE REGARDING PYSIDE6 / QT USAGE (LGPL v3):
+This application uses PySide6 (Qt for Python), which is licensed under the 
+GNU Lesser General Public License version 3 (LGPL v3). 
+
+As this project is distributed as source code, you may modify the PySide6 
+library or your local Python environment and run this application with those 
+modifications. For further details on the LGPL v3, please visit:
+https://www.gnu.org
+
+--------------------------------------------------------------------------------
+
