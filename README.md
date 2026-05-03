@@ -4,7 +4,7 @@ Additionally, a simple script for running measurement schemes with synchronized 
 
 # Requirements
 
-Note: Most code should be OS cross-platform compatible (Windows, Linux, MacOS) , but this is not fully tested yet. Code for automatic connection to the microcontroller board will need to be changed.
+Note: Most code should be OS cross-platform compatible (Windows, Linux, MacOS) , but this is not fully tested yet. Tested and works on Windows 11 and PiOS 64 bit on a Raspberry Pi 5 (make sure that that /sys/module/usbcore/parameters/usbfs_memory_mb is set to 0.)
 ### Hardware: 
 - XIMEA xiC USB cameras supporting "multiple exposures in one frame" mode (currently implemented and tested: MC124MG-SY, MC050CG-SY)
 - Arduino Uno rev 3
@@ -40,7 +40,7 @@ Note: Most code should be OS cross-platform compatible (Windows, Linux, MacOS) ,
 - 🔌: Device found (connected to USB) but not connected to imaging software
 - ❌: Device not found
 ### -Settings
-- Exposure (µs): Exposure time of the camera
+- **Exposure** (µs): Exposure time of the camera
 - **Delay 1** (µs): Delay between end of excitation pulse and start of exposure of first window. Takes the input delay of camera into consideration but NOT fall time of LED and propagation delay. Step size: 62.5 ns. Negative values can be set for trigger pulse which overlaps with excitation pulse -> frame-straddling
 - **Delay 2** (µs): Delay between end of excitation pulse and start of exposure of second window. Takes the input delay of camera into consideration. Step size: 62.5 ns
 - **End delay** (µs): delay after exposure 1 has ended. Needed for the camera to accept a new trigger signal in the next exposure. If too short -> timeout error
@@ -55,4 +55,4 @@ Note: Most code should be OS cross-platform compatible (Windows, Linux, MacOS) ,
 
 # Citation
 
-If you use this code in your publication, please cite: pending
+If you use this code in your publication, please cite: Schwendt, G.; Kühl, M. Time-Domain Luminescence Lifetime Imaging with Oxygen Sensor Particles in the Presence of Actinic Light. _Analyst_ **2026**. https://doi.org/10.1039/D6AN00122J.

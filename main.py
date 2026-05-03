@@ -12,7 +12,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtCore import QFile, QSize, Qt #QTimer
 from usb_watcher import USBWatcher
-import re
+import threading
 import serial
 import RLD_manager
 from RLD_manager import ImagingParameters  # Import the ImagingParameters class
@@ -146,11 +146,11 @@ class MainWindow(QMainWindow):
         self.camera = xiapi.Camera()
         if self.camera.get_number_devices() > 0:
             # no multi-camera support for now - open the first camera found
-            self.camera.open_device()  # blocking and therefore significantly slows down startup (~4 sec) if a camera is connected.
+            threading.Thread(target=lambda: (self.camera.open_device(), self.update_camera_status_lbl(), self.update_imaging_btn_status())).start() # executed in thread to avoid blocking rest of program while camera opens
         self.serial_connection = None  # Placeholder for serial connection
         if self.usb_watcher.number_of_controllers > 0:
-            self.connect_serial()
-            self.rld.serial_connection = self.serial_connection  # Pass the serial connection to RLD manager
+            first_controller_info = next(iter(self.usb_watcher.controllers.values())) # NOTE: code only supports single controller use for now, so if multiple are connected on startup one is basically chosen randomly
+            threading.Thread(target=lambda: (self.connect_serial(first_controller_info["serial_port"]), self.update_controller_status_lbl(), self.update_imaging_btn_status())).start()
 
         #print(dir(self.ui))  # This will list all the attributes (widgets) in the loaded UI
 
@@ -199,39 +199,41 @@ class MainWindow(QMainWindow):
             self.ui.camera_status_lbl.setText("❌")
             #print("set label to cross")
 
-    def connect_serial(self):
-        if self.usb_watcher.number_of_controllers > 0:
-            #print("controller found")
-            for dev_id, info in self.usb_watcher.controllers.items():
-                #unfortunately, the controller is sometimes only recognized as a generic device, so we search for "COM" in the ID_MODEL field
-                #we screen for the vendor ID in the USBWatcher class
-                #to be updated to be more cross-platform in the future
-                match = re.search(r'COM(\d+)', info.get("ID_MODEL", ""))
-                if match:
-                    com_port = f"COM{match.group(1)}"
-                    #print(f"Found controller on {com_port}")
-                    try:
-                        self.serial_connection = serial.Serial(com_port, baudrate=115200, timeout=1)
-                        #we should read the response here to confirm the correct device is connected 
-                        self.update_controller_status_lbl()
-                    except serial.SerialException as e:
-                        print(f"Error opening serial port {com_port}: {e}")
+    def update_imaging_btn_status(self):
+        # Enable or disable measurement button based on both devices being connected
+        if self.camera.CAM_OPEN and self.serial_connection and self.serial_connection.is_open:
+            self.ui.image_tau_btn.setEnabled(True)
+        else:
+            self.ui.image_tau_btn.setEnabled(False)
 
-    def on_usb_event(self, action, type_of_device):
-        
+    def connect_serial(self, serial_port):
+        #print("connect_serial: nr of controllers", self.usb_watcher.number_of_controllers)
+        if (self.usb_watcher.number_of_controllers > 0) and (self.serial_connection is None):
+            try:
+                #print(f"connecting to serial port: {serial_port")
+                self.serial_connection = serial.Serial(serial_port, baudrate=115200, timeout=1)
+                # TODO: send serial command ("ID") and read response to confirm a compatible controller (with right firmware version) is connected 
+            except serial.SerialException as e:
+                print(f"Error opening serial port {serial_port}: {e}")
+            self.update_controller_status_lbl()
+
+    def on_usb_event(self, action, type_of_device, info):
         #a bit redundant, but ensures the status labels are always correct
         self.update_camera_status_lbl()
         self.update_controller_status_lbl()
         
         if action == "added":
             #print(f"USB event: {action} - {type_of_device}")
+            #print("type of device: ", type_of_device)
+            #print("number of controllers: on_usb_event", self.usb_watcher.number_of_controllers)
             if "controller" in type_of_device:
-                if self.serial_connection is None:
-                    self.connect_serial()
+                threading.Thread(target=lambda: (self.connect_serial(info["serial_port"]), self.update_controller_status_lbl(), self.update_imaging_btn_status())).start()
 
             if "camera" in type_of_device:
                 if not self.camera.CAM_OPEN and self.camera.get_number_devices() > 0:
-                    self.camera.open_device()
+                    threading.Thread(target=lambda: (self.camera.open_device(), self.update_camera_status_lbl(), self.update_imaging_btn_status())).start()  # NOTE: for multi-camera implementation get serial number from info and use function self.camera.open_device_by_SN() instead. Depending on OS the SN must be clipped
+            
+
         if action == "removed":
             #print(f"USB event: {action} - {type_of_device}")
             if "controller" in type_of_device:
@@ -239,20 +241,16 @@ class MainWindow(QMainWindow):
                 #problem: user could connect multiple controllers
                 if self.serial_connection and self.serial_connection.is_open:
                     self.serial_connection.close()
-                self.serial_connection = None            
+                self.serial_connection = None    
+                self.update_controller_status_lbl()        
             if "camera" in type_of_device:
                 if self.camera.CAM_OPEN:
                     # Close camera safely. camera.is_isexist() throws an error if the camera is already removed but CAM_OPEN is still True 
                     # is_isexist() seems completely useless
                     self.camera.close_device()
-        self.update_controller_status_lbl()
-        self.update_camera_status_lbl()
+                    self.update_camera_status_lbl()
 
-        # Enable or disable measurement button based on both devices being connected
-        if self.camera.CAM_OPEN and self.serial_connection and self.serial_connection.is_open:
-            self.ui.image_tau_btn.setEnabled(True)
-        else:
-            self.ui.image_tau_btn.setEnabled(False)
+            self.update_imaging_btn_status()
 
 
 #endregion
